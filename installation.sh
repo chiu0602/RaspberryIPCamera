@@ -62,8 +62,9 @@ chmod 664 /home/pi/RaspberryIPCamera/secret/RaspberryIPCamera.secret
 # Enable our Raspberry Pi Camera Module in our boot configuration.
 ########################################################################################
 # run below command, enable the camera and reboot your Raspberry Pi
+echo "DISABLE_CAMERA_LED=1" | sudo tee -a /boot/config.txt
+echo "GPU_MEM_1024" | sudo tee -a /boot/config.txt
 sudo raspi-config
-
 ########################################################################################
 # Install all UV4L components
 ########################################################################################
@@ -145,14 +146,14 @@ sudo ln -s /tmp/phpsessions /var/lib/php5/sessions
 sudo mount -o remount rw /boot
 echo "dwc_otg.lpm_enable=0 console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait fastboot noswap" | sudo tee /boot/cmdline.txt
 # edit your fstab file
-sudo nano /etc/fstab
+# sudo nano /etc/fstab
 # Our /etc/fstab should look like the one below, copy and paste it
-proc            /proc           proc    defaults              0 0
-/dev/mmcblk0p1  /boot           vfat    ro,defaults           0 2
-/dev/mmcblk0p2  /               ext4    ro,defaults,noatime   0 1
-tmpfs           /var/log        tmpfs   nodev,nosuid          0 0
-tmpfs           /var/tmp        tmpfs   nodev,nosuid          0 0
-tmpfs           /tmp            tmpfs   nodev,nosuid          0 0
+#  proc            /proc           proc    defaults              0 0
+#  /dev/mmcblk0p1  /boot           vfat    ro,defaults           0 2
+#  /dev/mmcblk0p2  /               ext4    ro,defaults,noatime   0 1
+#  tmpfs           /var/log        tmpfs   nodev,nosuid          0 0
+#  tmpfs           /var/tmp        tmpfs   nodev,nosuid          0 0
+#  tmpfs           /tmp            tmpfs   nodev,nosuid          0 0
 # Modify service unit of nginx service to create log folder before starting, otherwise error
 sudo sed -i '20i\ExecStartPre=if [ ! -d "/var/log/nginx" ]; then /bin/mkdir /var/log/nginx fi' /lib/systemd/system/nginx.service
 # Modify service unit of php5-fpm service to create a tmp folder to store sessions in, otherwise error
@@ -160,9 +161,9 @@ sudo sed -i '8i\ExecStartPre=if [ ! -d "/tmp/phpsessions" ]; then /bin/mkdir /tm
 sudo sed -i '9i\ExecStartPre=/bin/chgrp www-data /tmp/phpsessions' /lib/systemd/system/php5-fpm.service
 sudo sed -i '10i\ExecStartPre=/bin/chmod 775 /tmp/phpsessions' /lib/systemd/system/php5-fpm.service
 # reboot your raspberry pi here, check if you are read only
-sudo reboot
+#sudo reboot
 # log in again and check the mounts
-mount | grep /dev/mmcblk0p2
+#mount | grep /dev/mmcblk0p2
 # your / filesystem should be ro
 
 ########################################################################################
